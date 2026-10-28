@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f4ede9">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Mi Manicura">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Mi Manicura</title>
+<style>
+:root{--bg:#faf8f6;--card:#fff;--ink:#302a28;--muted:#817672;--line:#e9e0dc;--accent:#8b6e67;--soft:#f4ede9;--danger:#a44444}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+header{padding:22px 18px 14px;background:var(--bg);position:sticky;top:0;z-index:2;border-bottom:1px solid var(--line)}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}h1{font-size:27px;margin:5px 0 0;font-weight:650}
+nav{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:10px;background:var(--card);position:sticky;top:87px;z-index:2;border-bottom:1px solid var(--line)}
+nav button{border:0;background:transparent;padding:10px 2px;border-radius:10px;color:var(--muted);font-size:12px}nav button.active{background:var(--soft);color:var(--ink);font-weight:650}
+main{padding:16px;max-width:720px;margin:auto}.page{display:none}.page.active{display:block}
+.row{display:flex;gap:10px;align-items:center}.between{justify-content:space-between}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px;margin-bottom:12px}.metric{font-size:25px;font-weight:700;margin-top:7px}.muted{color:var(--muted);font-size:13px}.eyebrow{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+button,.button{cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);padding:11px 13px;border-radius:11px;font:inherit;font-size:14px}.primary{background:var(--accent);color:#fff;border-color:var(--accent)}.small{padding:7px 10px;font-size:12px}.danger{color:var(--danger)}input,select,textarea{width:100%;padding:12px;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--ink);font:inherit;margin-top:5px;margin-bottom:12px}label{display:block;font-size:13px;color:var(--muted)}textarea{min-height:70px;resize:vertical}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.formgrid .full{grid-column:1/-1}.item-title{font-weight:650}.item{padding:13px 0;border-bottom:1px solid var(--line)}.item:last-child{border-bottom:0}.pill{background:var(--soft);border-radius:999px;padding:5px 8px;font-size:12px}.empty{text-align:center;padding:28px 10px;color:var(--muted)}.section-title{font-size:19px;margin:4px 0 14px}.notice{font-size:12px;line-height:1.45;color:var(--muted);padding:12px;background:var(--soft);border-radius:12px;margin-top:12px}.hidden{display:none!important}
+@media(max-width:380px){.formgrid{grid-template-columns:1fr}.formgrid .full{grid-column:auto}.metric{font-size:22px}}
+</style>
+</head>
+<body>
+<header><div class="brand">Tu espacio de belleza</div><h1>Mi Manicura <span aria-hidden="true">✳</span></h1></header>
+<nav>
+<button class="active" data-tab="inicio">Inicio</button><button data-tab="agenda">Agenda</button><button data-tab="servicios">Servicios</button><button data-tab="clientas">Clientas</button>
+</nav>
+<main>
+<section id="inicio" class="page active">
+<div class="row between"><div><div class="eyebrow" id="todayLabel"></div><h2 class="section-title">Tu resumen</h2></div><button class="primary" onclick="openAppointment()">+ Cita</button></div>
+<div class="grid">
+<div class="card"><div class="muted">Cobrado hoy</div><div class="metric" id="todayIncome">0,00 €</div></div>
+<div class="card"><div class="muted">Cobrado este mes</div><div class="metric" id="monthIncome">0,00 €</div></div>
+<div class="card"><div class="muted">Citas de hoy</div><div class="metric" id="todayCount">0</div></div>
+<div class="card"><div class="muted">Pendiente de cobro</div><div class="metric" id="pendingIncome">0,00 €</div></div>
+</div>
+<div class="row between"><h2 class="section-title">Próximas citas</h2><button class="small" onclick="showTab('agenda')">Ver agenda</button></div>
+<div class="card" id="upcoming"></div>
+<div class="notice">Tus datos se guardan en este navegador de este dispositivo. Exporta una copia de seguridad de vez en cuando y no borres los datos del navegador sin exportarla.</div>
+</section>
+<section id="agenda" class="page">
+<div class="row between"><h2 class="section-title">Agenda</h2><button class="primary" onclick="openAppointment()">+ Añadir cita</button></div>
+<label>Ver citas desde</label><input type="date" id="filterDate">
+<div id="appointments"></div>
+</section>
+<section id="servicios" class="page">
+<div class="row between"><h2 class="section-title">Servicios y precios</h2><button class="primary" onclick="openService()">+ Servicio</button></div>
+<div id="servicesList" class="card"></div>
+</section>
+<section id="clientas" class="page">
+<div class="row between"><h2 class="section-title">Clientas</h2><button class="primary" onclick="openClient()">+ Clienta</button></div>
+<input id="clientSearch" placeholder="Buscar por nombre o teléfono…" oninput="renderClients()">
+<div id="clientsList" class="card"></div>
+<div class="row" style="margin-top:10px"><button onclick="exportData()">Exportar copia de seguridad</button><button onclick="document.getElementById('importFile').click()">Importar copia</button><input class="hidden" type="file" id="importFile" accept="application/json" onchange="importData(event)"></div>
+</section>
+</main>
+
+<div id="modal" class="hidden" style="position:fixed;inset:0;background:#241c1a66;z-index:5;overflow:auto;padding:18px;align-items:flex-end;justify-content:center">
+<div style="background:var(--bg);border-radius:20px;padding:18px;width:100%;max-width:600px;margin:auto;max-height:92vh;overflow:auto">
+<div class="row between"><h2 id="modalTitle" class="section-title">Añadir</h2><button onclick="closeModal()">Cerrar</button></div>
+<form id="editor" onsubmit="saveForm(event)"><div id="formFields"></div><div class="row"><button type="button" onclick="closeModal()">Cancelar</button><button class="primary" type="submit">Guardar</button></div></form>
+</div></div>
+<script>
+const KEY='miManicuraData_v1';
+let data={appointments:[],services:[],clients:[]}, editing=null, mode='';
+const money=n=>(Number(n)||0).toLocaleString('es-ES',{style:'currency',currency:'EUR'});
+const today=()=>{let d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+function load(){try{const x=JSON.parse(localStorage.getItem(KEY));if(x)data={...data,...x}}catch(e){}}
+function persist(){localStorage.setItem(KEY,JSON.stringify(data));renderAll()}
+function showTab(id){document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.tab===id));}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function clientName(id){return data.clients.find(c=>c.id===id)?.name||'Clienta no guardada'}
+function serviceName(id){return data.services.find(s=>s.id===id)?.name||'Servicio personalizado'}
+function renderAll(){renderHome();renderAppointments();renderServices();renderClients()}
+function renderHome(){
+ const t=today(), month=t.slice(0,7), ap=data.appointments;
+ document.getElementById('todayLabel').textContent=new Date().toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
+ document.getElementById('todayIncome').textContent=money(ap.filter(a=>a.date===t&&a.paid).reduce((s,a)=>s+Number(a.price||0),0));
+ document.getElementById('monthIncome').textContent=money(ap.filter(a=>a.date?.startsWith(month)&&a.paid).reduce((s,a)=>s+Number(a.price||0),0));
+ document.getElementById('todayCount').textContent=ap.filter(a=>a.date===t).length;
+ document.getElementById('pendingIncome').textContent=money(ap.filter(a=>!a.paid).reduce((s,a)=>s+Number(a.price||0),0));
+ const upcoming=ap.filter(a=>a.date>=t).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).slice(0,5);
+ document.getElementById('upcoming').innerHTML=upcoming.length?upcoming.map(a=>`<div class="item"><div class="row between"><div><div class="item-title">${esc(clientName(a.clientId))}</div><div class="muted">${esc(a.date)} · ${esc(a.time||'Sin hora')} · ${esc(serviceName(a.serviceId))}</div></div><span class="pill">${money(a.price)}</span></div></div>`).join(''):'<div class="empty">Todavía no tienes citas próximas.</div>';
+}
+function renderAppointments(){
+ const f=document.getElementById('filterDate');if(!f.value)f.value=today();
+ const arr=data.appointments.filter(a=>a.date>=f.value).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+ document.getElementById('appointments').innerHTML=arr.length?arr.map(a=>`<div class="card"><div class="row between"><div><div class="item-title">${esc(clientName(a.clientId))}</div><div class="muted">${esc(a.date)} · ${esc(a.time||'Sin hora')}</div><div style="margin-top:6px">${esc(serviceName(a.serviceId))} · <b>${money(a.price)}</b></div><div class="muted">${a.paid?'Pagada':'Pendiente de pago'}${a.notes?' · '+esc(a.notes):''}</div></div><div style="display:grid;gap:6px"><button class="small" onclick="editAppointment('${a.id}')">Editar</button><button class="small" onclick="togglePaid('${a.id}')">${a.paid?'Desmarcar pago':'Marcar pagada'}</button><button class="small danger" onclick="removeItem('appointments','${a.id}')">Borrar</button></div></div></div>`).join(''):'<div class="card empty">No hay citas desde esa fecha.</div>';
+}
+document.getElementById('filterDate').addEventListener('change',renderAppointments);
+function renderServices(){const el=document.getElementById('servicesList');el.innerHTML=data.services.length?data.services.map(s=>`<div class="item row between"><div><div class="item-title">${esc(s.name)}</div><div class="muted">${s.duration?esc(s.duration)+' min · ':''}${money(s.price)}</div></div><div class="row"><button class="small" onclick="editService('${s.id}')">Editar</button><button class="small danger" onclick="removeItem('services','${s.id}')">×</button></div></div>`).join(''):'<div class="empty">Añade tus servicios y precios para empezar.</div>'}
+function renderClients(){const q=(document.getElementById('clientSearch')?.value||'').toLowerCase();const arr=data.clients.filter(c=>(c.name+' '+c.phone).toLowerCase().includes(q));document.getElementById('clientsList').innerHTML=arr.length?arr.map(c=>`<div class="item"><div class="row between"><div><div class="item-title">${esc(c.name)}</div><div class="muted">${esc(c.phone||'Sin teléfono')}</div><div class="muted">${esc(c.notes||'')}</div></div><div style="display:grid;gap:6px"><button class="small" onclick="editClient('${c.id}')">Editar</button>${c.phone?`<button class="small" onclick="contactClient('${c.id}')">WhatsApp</button>`:''}<button class="small danger" onclick="removeItem('clients','${c.id}')">Borrar</button></div></div></div>`).join(''):'<div class="empty">Todavía no hay clientas guardadas.</div>'}
+function contactClient(id){let c=data.clients.find(x=>x.id===id);let phone=(c.phone||'').replace(/\D/g,'');if(phone)location.href='https://wa.me/'+phone}
+function openModal(title,fields,m,record=null){mode=m;editing=record;document.getElementById('modalTitle').textContent=title;document.getElementById('formFields').innerHTML=fields;document.getElementById('modal').classList.remove('hidden');document.getElementById('modal').style.display='flex'}
+function closeModal(){document.getElementById('modal').classList.add('hidden');document.getElementById('modal').style.display='none'}
+function openClient(c={}){openModal(c.id?'Editar clienta':'Nueva clienta',`<label>Nombre *</label><input name="name" required value="${esc(c.name||'')}" placeholder="Nombre y apellidos"><label>Teléfono</label><input name="phone" type="tel" value="${esc(c.phone||'')}" placeholder="Número con prefijo de país"><label>Notas</label><textarea name="notes" placeholder="Preferencias, alergias declaradas, etc.">${esc(c.notes||'')}</textarea>`,'client',c.id?c:null)}
+function editClient(id){openClient(data.clients.find(c=>c.id===id))}
+function openService(s={}){openModal(s.id?'Editar servicio':'Nuevo servicio',`<label>Nombre del servicio *</label><input name="name" required value="${esc(s.name||'')}" placeholder="Ej. Semipermanente"><div class="formgrid"><div><label>Precio (€) *</label><input name="price" required type="number" min="0" step=".01" value="${s.price??''}"></div><div><label>Duración (minutos)</label><input name="duration" type="number" min="0" value="${s.duration||''}"></div></div>`,'service',s.id?s:null)}
+function editService(id){openService(data.services.find(s=>s.id===id))}
+function openAppointment(a={}){
+ const opts=data.clients.map(c=>`<option value="${c.id}" ${a.clientId===c.id?'selected':''}>${esc(c.name)}</option>`).join('');
+ const svcs=data.services.map(s=>`<option value="${s.id}" data-price="${s.price}" ${a.serviceId===s.id?'selected':''}>${esc(s.name)} — ${money(s.price)}</option>`).join('');
+ openModal(a.id?'Editar cita':'Nueva cita',`${data.clients.length?'':'<div class="notice">Primero puedes añadir una clienta desde la pestaña Clientas.</div>'}<label>Clienta *</label><select name="clientId" required><option value="">Selecciona una clienta</option>${opts}</select><label>Servicio</label><select name="serviceId" id="serviceSelect"><option value="">Servicio personalizado</option>${svcs}</select><div class="formgrid"><div><label>Fecha *</label><input name="date" type="date" required value="${esc(a.date||today())}"></div><div><label>Hora</label><input name="time" type="time" value="${esc(a.time||'10:00')}"></div><div><label>Precio (€) *</label><input name="price" type="number" min="0" step=".01" required value="${a.price??''}"></div><div><label>Estado del pago</label><select name="paid"><option value="false" ${!a.paid?'selected':''}>Pendiente</option><option value="true" ${a.paid?'selected':''}>Pagada</option></select></div></div><label>Notas</label><textarea name="notes">${esc(a.notes||'')}</textarea>`,'appointment',a.id?a:null);
+ const sel=document.getElementById('serviceSelect');sel.addEventListener('change',()=>{let op=sel.selectedOptions[0];if(op.dataset.price!==undefined)document.querySelector('#formFields [name=price]').value=op.dataset.price});
+}
+function editAppointment(id){openAppointment(data.appointments.find(a=>a.id===id))}
+function saveForm(e){e.preventDefault();const f=Object.fromEntries(new FormData(e.target).entries());let arrKey={client:'clients',service:'services',appointment:'appointments'}[mode];if(mode==='service'){f.price=Number(f.price);f.duration=Number(f.duration||0)}if(mode==='appointment'){f.price=Number(f.price);f.paid=f.paid==='true'}const arr=data[arrKey];if(editing){Object.assign(arr.find(x=>x.id===editing.id),f)}else arr.push({id:uid(),...f});persist();closeModal()}
+function removeItem(key,id){if(confirm('¿Seguro que quieres borrar este elemento?')){data[key]=data[key].filter(x=>x.id!==id);persist()}}
+function togglePaid(id){let a=data.appointments.find(x=>x.id===id);a.paid=!a.paid;persist()}
+function exportData(){const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='copia-mi-manicura.json';a.click();URL.revokeObjectURL(a.href)}
+function importData(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result);if(!x.clients||!x.services||!x.appointments)throw Error();if(confirm('La importación sustituirá los datos actuales. ¿Continuar?')){data=x;persist();alert('Copia importada correctamente')}}catch(err){alert('El archivo no parece una copia válida de Mi Manicura.')}};r.readAsText(file);e.target.value=''}
+load();renderAll();
+if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script>
+</body></html>

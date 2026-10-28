@@ -1,0 +1,14 @@
+MI MANICURA — AGENDA PERSONAL
+
+Incluye:
+- Agenda de citas, clientas, servicios y precios.
+- Registro de pagos e ingresos diarios/mensuales.
+- Guardado local en el navegador.
+- Exportación e importación de copia de seguridad.
+- Diseño adaptable a iPhone y modo PWA.
+
+IMPORTANTE:
+Para instalarla como icono en la pantalla de inicio de iPhone, los archivos deben estar publicados en una dirección HTTPS. No abras index.html directamente desde Archivos esperando que se instale como app. Una opción es publicar esta carpeta en un alojamiento estático HTTPS (por ejemplo, GitHub Pages) y luego, en Safari, abrir la dirección, tocar Compartir y elegir “Añadir a pantalla de inicio”.
+
+PRIVACIDAD Y COPIAS:
+Los datos se guardan en el almacenamiento local del navegador de ese dispositivo. No se sincronizan automáticamente con iCloud ni con otros dispositivos. Exporta periódicamente una copia desde Clientas > Exportar copia de seguridad. No guardes datos sensibles innecesarios.
